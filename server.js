@@ -63,10 +63,11 @@ async function createServer(
         render = require("./dist/server/entry-server.js").render;
       }
 
-      const { html, script } = render(url, manifest);
+      const solidWeb = require("solid-js/web");
+      const html = render(url, manifest);
 
       const appHtml = template
-        .replace(`<!--app-head-->`, script)
+        .replace(`<!--app-head-->`, solidWeb.generateHydrationScript())
         .replace(`<!--app-html-->`, html);
 
       res.status(200).set({ "Content-Type": "text/html" }).end(appHtml);
