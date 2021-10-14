@@ -1,4 +1,4 @@
 import { hydrate } from "solid-js/web";
-import { App } from "./app";
+import Browser from "./Browser";
 
-hydrate(() => <App />, document.getElementById("app"));
+hydrate(() => <Browser />, document.getElementById("app"));
