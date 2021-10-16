@@ -26,6 +26,8 @@ async function createServer(
 		: null;
 	// @ts-ignore
 	const manifest = isProd ? require('./dist/client/ssr-manifest.json') : {};
+	/** @type {import('./src/typings/user').Users} */ // @ts-ignore
+	const users = require('./static/users.json');
 
 	const app = express().disable('x-powered-by');
 
@@ -51,6 +53,30 @@ async function createServer(
 			}),
 		);
 	}
+
+	app.all('/api/v1/users/:uid', (req, res) => {
+		let sent = false;
+		/** @type {import('./src/typings/user').Users} */ // @ts-ignore
+		const Users = isProd ? users : require('./static/users.json');
+		Object.keys(Users).some((uid) => {
+			const isUser = uid === req.params.uid;
+			if (!sent) {
+				const user = users[uid];
+				if (user) {
+					res.json({ data: user });
+					sent = isUser;
+				}
+			}
+			return sent;
+		});
+		if (!sent) {
+			res.status(404).json({ error: { status: 404 } });
+		}
+	});
+	app.get('/api/v1/users', (req, res) => {
+		/** @type {import('./src/typings/user').Users} */ // @ts-ignore
+		const Users = isProd ? users : require('./static/users.json');
+	});
 
 	app.get('/favicon.ico', (_, r) => r.redirect('/favicon.svg'));
 
@@ -83,7 +109,7 @@ async function createServer(
 			const ctx = {};
 			const html = render(url, ctx);
 
-			console.log('Render Out:\n', ctx);
+			console.log(`Request '${req.originalUrl}' out:\n`, ctx);
 			assert(
 				ctx.matches,
 				"'ctx.matches' doesn't exist,\nsomething probably went wrong!\nDid you try restarting nodemon?",
@@ -94,7 +120,7 @@ async function createServer(
 			if (ctx.url) {
 				res.redirect(307, ctx.url);
 			} else {
-				const appHtml = template
+				const appHtml = template // TODO: Improve insert (don't rely on comments)
 					.replace(`<!--app-head-->`, html.head + html.hydration)
 					.replace(`<!--app-html-->`, html.body);
 

@@ -3,8 +3,7 @@ import { useRoutes, RouteDefinition } from 'solid-app-router';
 import { Meta } from 'solid-meta';
 import './styles/global.scss';
 
-export const handlers = import.meta.glob('./routes/*.ts');
-export const pages = import.meta.glob('./routes/*.tsx');
+export const pages = import.meta.glob('./routes/**/*.tsx');
 
 export const routes = Object.keys(pages).map((fPath): RouteDefinition => {
 	const page = pages[fPath] as () => Promise<{
