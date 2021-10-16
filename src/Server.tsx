@@ -1,5 +1,5 @@
 import type { Component } from 'solid-js';
-import { Router, RouteDataFunc } from 'solid-app-router';
+import { Router, RouteDataFunc, RouterOutput } from 'solid-app-router';
 import { MetaProvider } from 'solid-meta';
 import { App } from './App';
 
@@ -11,7 +11,7 @@ export interface TagDescription {
 export interface ServerProps {
 	tags: TagDescription[];
 	url: string;
-	out?: object | {};
+	out?: object | RouterOutput | {};
 	data?: RouteDataFunc;
 }
 
