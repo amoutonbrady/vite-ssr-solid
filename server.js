@@ -1,15 +1,16 @@
 // @ts-check
 // file deepcode ignore Utf8Literal: Web uses utf-8
-const { readFileSync } = require("fs");
-const path = require("path");
-const express = require("express");
+const { readFileSync } = require('fs');
+const path = require('path');
+const express = require('express');
+const assert = require('assert');
 
-const isTest = process.env.NODE_ENV === "test" || !!process.env.VITE_TEST_BUILD;
-const PORT = process.env.PORT || "3000";
+const isTest = process.env.NODE_ENV === 'test' || !!process.env.VITE_TEST_BUILD;
+const PORT = process.env.PORT || '3000';
 
 async function createServer(
 	root = process.cwd(),
-	isProd = process.env.NODE_ENV === "production"
+	isProd = process.env.NODE_ENV === 'production',
 ) {
 	/**
 	 * @param {string} p
@@ -17,26 +18,24 @@ async function createServer(
 	const resolve = (p) => path.resolve(__dirname, p);
 
 	const indexProd = isProd
-		? readFileSync(resolve("dist/client/index.html"), "utf-8")
-		: "";
+		? readFileSync(resolve('dist/client/index.html'), 'utf-8')
+		: '';
 	/** @type {import('./src/entry-server').render} */
 	const ProdRenderer = isProd
-		? require("./dist/server/entry-server.js").render
+		? require('./dist/server/entry-server.js').render
 		: null;
 	// @ts-ignore
-	const manifest = isProd ? require("./dist/client/ssr-manifest.json") : {};
+	const manifest = isProd ? require('./dist/client/ssr-manifest.json') : {};
 
-	const app = express().disable("x-powered-by");
+	const app = express().disable('x-powered-by');
 
-	/**
-	 * @type {import('vite').ViteDevServer}
-	 */
+	/** @type {import('vite').ViteDevServer} */
 	let vite;
 
 	if (!isProd) {
-		vite = await require("vite").createServer({
+		vite = await require('vite').createServer({
 			root,
-			logLevel: isTest ? "error" : "info",
+			logLevel: isTest ? 'error' : 'info',
 			server: {
 				middlewareMode: true,
 			},
@@ -44,16 +43,19 @@ async function createServer(
 		// use vite's connect instance as middleware
 		app.use(vite.middlewares);
 	} else {
-		app.use(require("compression"));
+		app.use(require('compression'));
 		app.use(
-			require("serve-static")(resolve("dist/client"), {
+			require('serve-static')(resolve('dist/client'), {
 				index: false,
-			})
+				extensions: false,
+			}),
 		);
 	}
 
+	app.get('/favicon.ico', (_, r) => r.redirect('/favicon.svg'));
+
 	// deepcode ignore NoRateLimitingForExpensiveWebOperation: only used in dev
-	app.use("*", async (req, res) => {
+	app.use('*', async (req, res) => {
 		try {
 			const url = req.originalUrl;
 
@@ -65,7 +67,7 @@ async function createServer(
 				? indexProd
 				: await vite.transformIndexHtml(
 						url,
-						readFileSync(resolve("index.html"), "utf-8")
+						readFileSync(resolve('index.html'), 'utf-8'),
 				  );
 			/**
 			 * always get fresh components in dev
@@ -73,18 +75,35 @@ async function createServer(
 			 */
 			const render = isProd
 				? ProdRenderer
-				: (await vite.ssrLoadModule("/src/entry-server.tsx")).render;
+				: (await vite.ssrLoadModule('/src/entry-server.tsx')).render;
 
 			//console.log('Renderer:\n', render)
+			assert(typeof render === 'function', '"render" is not a function!');
 
-			const html = render(url);
+			const ctx = {};
+			const html = render(url, ctx);
 
-			const appHtml = template
-				.replace(`<!--app-head-->`, html.head + html.hydration)
-				.replace(`<!--app-html-->`, html.body);
+			console.log('Render Out:\n', ctx);
+			assert(
+				ctx.matches,
+				"'ctx.matches' doesn't exist,\nsomething probably went wrong!\nDid you try restarting nodemon?",
+			);
 
-			// deepcode ignore XSS: url only used to render page, deepcode ignore ServerLeak: Doesn't happen here
-			res.status(200).set({ "Content-Type": "text/html" }).end(appHtml);
+			// TODO: 404 if ctx matches wrong
+
+			if (ctx.url) {
+				res.redirect(307, ctx.url);
+			} else {
+				const appHtml = template
+					.replace(`<!--app-head-->`, html.head + html.hydration)
+					.replace(`<!--app-html-->`, html.body);
+
+				// deepcode ignore XSS: url only used to render page, deepcode ignore ServerLeak: Doesn't happen here
+				res
+					.status(200)
+					.set({ 'Content-Type': 'text/html;charset=utf-8' })
+					.end(appHtml);
+			}
 		} catch (e) {
 			vite && vite.ssrFixStacktrace(e);
 			console.log(e.stack);
@@ -104,10 +123,10 @@ if (!isTest) {
 		.then(({ app }) =>
 			app.listen(PORT, () => {
 				console.log(`http://localhost:${PORT}`);
-			})
+			}),
 		)
 		.catch((err) => {
-			console.error("Error Starting Server:\n", err);
+			console.error('Error Starting Server:\n', err);
 			process.exit(1);
 		});
 }

@@ -1,5 +1,6 @@
 {
 	"recommendations": [
-		"bernardogualberto.solidjs"
+		"bernardogualberto.solidjs",
+		"esbenp.prettier-vscode"
 	]
 }

@@ -1,23 +1,29 @@
-import { createSignal } from "solid-js";
-import { Title, Link } from "solid-meta";
-import favicon from "../static/favicon.svg?url";
+import { lazy, Component } from 'solid-js';
+import { useRoutes, RouteDefinition } from 'solid-app-router';
+import { Meta } from 'solid-meta';
+import './styles/global.scss';
+
+export const handlers = import.meta.glob('./routes/*.ts');
+export const pages = import.meta.glob('./routes/*.tsx');
+
+export const routes = Object.keys(pages).map((fPath): RouteDefinition => {
+	const page = pages[fPath] as () => Promise<{
+		default: Component<any>;
+		[key: string]: any;
+	}>;
+	const rawPath = fPath.match(/\.\/routes(\/.*?)(?:[Ii]ndex)?\.tsx$/)![1];
+	return {
+		path: rawPath!, // TODO: Transform path
+		component: lazy(page),
+	};
+});
 
 export const App = () => {
-	const [count, setCount] = createSignal(0);
-
-	const counts = (Count: () => number): string => {
-		const count = Count();
-		return `${count} time${count === 1 ? "" : "s"}`;
-	};
-
+	const Routes = useRoutes(routes);
 	return (
 		<>
-			<Title>Solid.js & Vite - SSR</Title>
-			<Link rel="shortcut icon" type="image/svg+xml" href={favicon} />
-			<div>
-				<button onClick={() => setCount(count() + 1)}>Click me</button>
-				<p> The Button Has been clicked {counts(count)}</p>
-			</div>
+			<Meta name='viewport' content='width=device-width, initial-scale=1' />
+			<Routes />
 		</>
 	);
 };

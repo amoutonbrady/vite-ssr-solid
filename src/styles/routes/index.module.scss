@@ -1,0 +1,40 @@
+.main {
+	height: 100%;
+
+	display: flex;
+
+	align-content: center;
+	align-items: center;
+
+	justify-content: center;
+	justify-items: center;
+
+	text-align: center;
+}
+
+.core {
+	font-size: 1.25rem;
+	background-color: #484848;
+	padding: 0.5em;
+
+	border-color: #111111;
+	border-style: solid;
+	border-width: 1px;
+	border-radius: 4px;
+	transition-property: width, height, border-radius, padding;
+	transition-duration: 250ms;
+	transition-timing-function: linear;
+}
+
+.btn {
+	color: #eeeeee;
+	background-color: #ff27271e;
+	font-size: 1.25rem;
+
+	padding: 0.25em;
+
+	border-radius: calc(1.25em / 4);
+	border-width: 2px;
+	border-style: solid;
+	border-color: #ff0000;
+}
