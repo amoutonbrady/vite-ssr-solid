@@ -2,6 +2,21 @@
 	"recommendations": [
 		"bernardogualberto.solidjs",
 		"esbenp.prettier-vscode",
-		"streetsidesoftware.code-spell-checker"
+		"streetsidesoftware.code-spell-checker",
+		"aaron-bond.better-comments",
+		"axetroy.vscode-auto-schema",
+		"formulahendry.auto-close-tag",
+		"formulahendry.auto-rename-tag",
+		"mikestead.dotenv",
+		"editorconfig.editorconfig",
+		"usernamehw.errorlens",
+		"henry-li.vscode-import-formatter",
+		"ldez.ignore-files",
+		"bierner.markdown-checkbox",
+		"bierner.markdown-emoji",
+		"davidanson.vscode-markdownlint",
+		"mrmlnc.vscode-attrs-sorter",
+		"gruntfuggly.todo-tree",
+		"wayou.vscode-todo-highlight"
 	]
 }

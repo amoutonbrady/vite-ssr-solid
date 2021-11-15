@@ -1,17 +1,30 @@
 import { For, createResource } from 'solid-js';
 import { Title, Link } from 'solid-meta';
-import nFetch from '../../utils/fetch';
+//import nFetch from '../../utils/fetch';
 import UserPreview from '../../components/User/Preview';
 import type { Users as IUsers, User as IUser } from '../../typings/user';
 
 const Users = () => {
 	const [users, { mutate, refetch }] = createResource<IUsers, true>(
 		() =>
-			nFetch('localhost:3000/api/v1/users').then(
-				(res) => res.json() as Promise<IUsers>,
-			),
+			fetch('http://localhost:3000/api/v1/users')
+				/*nFetch('localhost:3000/api/v1/users')*/ .then((res) => {
+					const users = res.json() as Promise<IUsers>;
+					console.log('Fetched Users:', users);
+					return users;
+				})
+				.catch((err) => {
+					console.log('Error Fetching users:\n', err);
+					throw err;
+				}),
 		{ initialValue: {}, name: 'User' },
 	);
+
+	const logUser = (uid: string) => {
+		const user = users()[uid];
+		console.log(`Mapping user '${uid}':`, user);
+		return user;
+	};
 
 	return (
 		<>
@@ -22,7 +35,7 @@ const Users = () => {
 				<For each={Object.keys(users)}>
 					{(item) => (
 						<li>
-							<UserPreview uid={item} user={users()[item]!} />
+							<UserPreview uid={item} user={logUser(item)!} />
 						</li>
 					)}
 				</For>

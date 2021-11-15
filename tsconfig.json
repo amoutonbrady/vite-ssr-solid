@@ -1,14 +1,14 @@
 {
-  "compilerOptions": {
+	"compilerOptions": {
 		/* Visit https://aka.ms/tsconfig.json to read more about this file */
 
 		/* Projects */
 		"incremental": true,								/* Enable incremental compilation */
 		"composite": true,									/* Enable constraints that allow a TypeScript project to be used with project references. */
-		"tsBuildInfoFile": "./node_modules/.cache",			/* Specify the folder for .tsbuildinfo incremental compilation files. */
-		// "disableSourceOfProjectReferenceRedirect": true,	/* Disable preferring source files instead of declaration files when referencing composite projects */
-		// "disableSolutionSearching": true,				/* Opt a project out of multi-project reference checking when editing. */
-		// "disableReferencedProjectLoad": true,			/* Reduce the number of projects loaded automatically by TypeScript. */
+		"tsBuildInfoFile": "./node_modules/.cache/ts",		/* Specify the folder for .tsbuildinfo incremental compilation files. */
+		//"disableSourceOfProjectReferenceRedirect": true,	/* Disable preferring source files instead of declaration files when referencing composite projects */
+		//"disableSolutionSearching": true,					/* Opt a project out of multi-project reference checking when editing. */
+		//"disableReferencedProjectLoad": true,				/* Reduce the number of projects loaded automatically by TypeScript. */
 
 		/* Language and Environment */
 		"target": "esnext",									/* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
@@ -23,7 +23,7 @@
 		"jsxImportSource": "solid-js",						/* Specify module specifier used to import the JSX factory functions when using `jsx: react-jsx*`.` */
 		//"reactNamespace": "",								/* Specify the object invoked for `createElement`. This only applies when targeting `react` JSX emit. */
 		//"noLib": true,									/* Disable including any library files, including the default lib.d.ts. */
-		//"useDefineForClassFields": true,					/* Emit ECMAScript-standard-compliant class fields. */
+		"useDefineForClassFields": true,					/* Emit ECMAScript-standard-compliant class fields. */
 
 		/* Modules */
 		"module": "esnext",									/* Specify what module code is generated. */
@@ -31,21 +31,22 @@
 		"moduleResolution": "node",							/* Specify how TypeScript looks up a file from a given module specifier. */
 		"baseUrl": "./",									/* Specify the base directory to resolve non-relative module names. */
 		"paths": {											/* Specify a set of entries that re-map imports to additional lookup locations. */
-			"$src/*": [
-				"./src/*"
-			],
-			"$routes/*": [
-				"./src/routes/*"
-			],
-			"$static/*": [
-				"./static/*"
-			],
-			"$package": [
-				"./package.json"
-			],
-			"$/*": [
-				"./*"
-			]
+			// FIXME: Vite doesn't follow the alliases.
+			//"$src/*": [
+			//	"./src/*"
+			//],
+			//"$routes/*": [
+			//	"./src/routes/*"
+			//],
+			//"$static/*": [
+			//	"./static/*"
+			//],
+			//"$package": [
+			//	"./package.json"
+			//],
+			//"$/*": [
+			//	"./*"
+			//]
 		},
 		//"rootDirs": [],									/* Allow multiple folders to be treated as one when resolving modules. */
 		//"typeRoots": [],									/* Specify multiple folders that act like `./node_modules/@types`. */
@@ -67,7 +68,7 @@
 		//"emitDeclarationOnly": true,						/* Only output d.ts files and not JavaScript files. */
 		"sourceMap": true,									/* Create source map files for emitted JavaScript files. */
 		//"outFile": "./",									/* Specify a file that bundles all outputs into one JavaScript file. If `declaration` is true, also designates a file that bundles all .d.ts output. */
-		"outDir": "./out",									/* Specify an output folder for all emitted files. */
+		"outDir": "./dist/ts/",								/* Specify an output folder for all emitted files. */
 		//"removeComments": true,							/* Disable emitting comments. */
 		"noEmit": true,										/* Disable emitting files from a compilation. */
 		"importHelpers": true,								/* Allow importing helper functions from tslib once per project, instead of including them per-file. */
@@ -80,7 +81,7 @@
 		//"emitBOM": true,									/* Emit a UTF-8 Byte Order Mark (BOM) in the beginning of output files. */
 		//"newLine": "crlf",								/* Set the newline character for emitting files. */
 		//"stripInternal": true,							/* Disable emitting declarations that have `@internal` in their JSDoc comments. */
-		//"noEmitHelpers": true,							/* Disable generating custom helper functions like `__extends` in compiled output. */
+		"noEmitHelpers": false,								/* Disable generating custom helper functions like `__extends` in compiled output. */
 		//"noEmitOnError": true,							/* Disable emitting files if any type checking errors are reported. */
 		"preserveConstEnums": true,							/* Disable erasing `const enum` declarations in generated code. */
 		//"declarationDir": "./",							/* Specify the output directory for generated declaration files. */
@@ -116,5 +117,11 @@
 		/* Completeness */
 		//"skipDefaultLibCheck": true,						/* Skip type checking .d.ts files that are included with TypeScript. */
 		"skipLibCheck": true								/* Skip type checking all .d.ts files. */
-  }
+	},
+	"include": [
+		"./src/**/*",
+		"./static/**/*",
+		"./index.html",
+		"./package.json"
+	]
 }

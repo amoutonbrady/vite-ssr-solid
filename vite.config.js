@@ -11,6 +11,10 @@ export default defineConfig({
 		},
 		solid({ ssr: true }),
 	],
+	build: {
+		manifest: true,
+		ssrManifest: true,
+	},
 	resolve: {
 		preserveSymlinks: true, // Avoid errors with pnpm linking
 	},
@@ -18,5 +22,6 @@ export default defineConfig({
 		// Vite attempts to load this as a Commonjs dependency
 		noExternal: ['solid-meta'],
 	},
+	cacheDir: 'node_modules/.cache/vite',
 	assetsInclude: [/\/static\/.*$/],
 });

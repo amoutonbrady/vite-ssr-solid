@@ -1,7 +1,6 @@
 {
 	"arrowParens": "always",
 	"embeddedLanguageFormatting": "auto",
-	"jsxBracketSameLine": true,
 	"bracketSameLine": true,
 	"jsxSingleQuote": true,
 	"singleQuote": true,
