@@ -12,24 +12,29 @@ async function createServer(
 	root = process.cwd(),
 	isProd = process.env.NODE_ENV === 'production',
 ) {
-	/**
-	 * @param {string} p
-	 */
+	/** @param {string} p */
 	const resolve = (p) => path.resolve(__dirname, p);
 
 	const indexProd = isProd
 		? readFileSync(resolve('dist/client/index.html'), 'utf-8')
 		: '';
+
+	/** @type {import('./src/entry-server')} */
+	const ProdEntry = isProd ? require('./dist/server/entry-server.js') : null;
+
 	/** @type {import('./src/entry-server').render} */
-	const ProdRenderer = isProd
-		? require('./dist/server/entry-server.js').render
-		: null;
-	// @ts-ignore
+	const ProdRenderer = isProd ? ProdEntry.render : null;
+
+	/** @type {import('./src/entry-server').handlers} */
+	const ProdApi = isProd ? ProdEntry.handlers : null;
+
 	const manifest = isProd ? require('./dist/client/ssr-manifest.json') : {};
-	/** @type {import('./src/typings/user').Users} */ // @ts-ignore
+	/** @type {import('./src/typings/user').Users} */ // @ts-expect-error
 	const users = require('./static/users.json');
 
 	const app = express().disable('x-powered-by');
+
+	app.get('/index.html', (_, r) => r.redirect('/', 301));
 
 	/** @type {import('vite').ViteDevServer} */
 	let vite;
@@ -54,13 +59,16 @@ async function createServer(
 		);
 	}
 
+	// TODO: Api handlers
+	//app.all('/api')
+
 	app.all('/api/v1/users/:uid', (req, res) => {
 		let sent = false;
-		/** @type {import('./src/typings/user').Users} */ // @ts-ignore
+		/** @type {import('./src/typings/user').Users} */ // @ts-expect-error
 		const Users = isProd ? users : require('./static/users.json');
 		Object.keys(Users).some((uid) => {
 			const isUser = uid === req.params.uid;
-			if (!sent) {
+			if (isUser && !sent) {
 				const user = users[uid];
 				if (user) {
 					res.json({ data: user });
@@ -74,8 +82,10 @@ async function createServer(
 		}
 	});
 	app.get('/api/v1/users', (req, res) => {
-		/** @type {import('./src/typings/user').Users} */ // @ts-ignore
+		/** @type {import('./src/typings/user').Users} */ // @ts-expect-error
 		const Users = isProd ? users : require('./static/users.json');
+		// TODO: Pagination
+		return res.json({ data: Users });
 	});
 
 	app.get('/favicon.ico', (_, r) => r.redirect('/favicon.svg'));
@@ -106,6 +116,7 @@ async function createServer(
 			//console.log('Renderer:\n', render)
 			assert(typeof render === 'function', '"render" is not a function!');
 
+			/** @type {import('solid-app-router').RouterOutput} */ // @ts-expect-error
 			const ctx = {};
 			const html = render(url, ctx);
 
@@ -118,7 +129,7 @@ async function createServer(
 			// TODO: 404 if ctx matches wrong
 
 			if (ctx.url) {
-				res.redirect(307, ctx.url);
+				res.redirect(ctx.url, 302);
 			} else {
 				const appHtml = template // TODO: Improve insert (don't rely on comments)
 					.replace(`<!--app-head-->`, html.head + html.hydration)
@@ -132,11 +143,14 @@ async function createServer(
 			}
 		} catch (e) {
 			vite && vite.ssrFixStacktrace(e);
-			console.log(e.stack);
+			console.error('Error handling request:', req, res, e);
+			res.status(500);
 			// Don't leak data in prod
 			if (!isProd) {
 				// deepcode ignore XSS: url only used in dev, deepcode ignore ServerLeak: not done in prod
-				res.status(500).end(e.stack);
+				res.end(e.stack);
+			} else {
+				// TODO: Send back a nice error page
 			}
 		}
 	});
@@ -144,6 +158,7 @@ async function createServer(
 	return { app, vite };
 }
 
+// FIXME: only run if the file isn't required by another file
 if (!isTest) {
 	createServer()
 		.then(({ app }) =>

@@ -10,5 +10,6 @@
 		"pnpm",
 		"shortcircuit",
 		"Vite"
-	]
+	],
+	"typescript.tsdk": "node_modules\\typescript\\lib"
 }

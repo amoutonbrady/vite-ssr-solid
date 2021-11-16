@@ -7,13 +7,15 @@ export default defineConfig({
 		{
 			...typescriptPaths(),
 			enforce: 'pre',
-			//! TODO: Fix Typescript Paths!
+			// FIXME: Fix Typescript Paths!
 		},
 		solid({ ssr: true }),
 	],
 	build: {
 		manifest: true,
 		ssrManifest: true,
+		// force stuff to never be inlined
+		assetsInlineLimit: 0,
 	},
 	resolve: {
 		preserveSymlinks: true, // Avoid errors with pnpm linking
