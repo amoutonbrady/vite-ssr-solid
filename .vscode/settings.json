@@ -1,0 +1,15 @@
+{
+	"cSpell.words": [
+		"Alexandre",
+		"amoutonbrady",
+		"deepcode",
+		"degit",
+		"jiti",
+		"middlewares",
+		"ndex",
+		"pnpm",
+		"shortcircuit",
+		"Vite"
+	],
+	"typescript.tsdk": "node_modules\\typescript\\lib"
+}

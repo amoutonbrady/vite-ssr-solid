@@ -1,13 +1,16 @@
-import type { Component } from "solid-js";
-import { MetaProvider } from "solid-meta";
-import { App } from "./App";
+import type { Component } from 'solid-js';
+import { Router } from 'solid-app-router';
+import { MetaProvider } from 'solid-meta';
+import { App } from './App';
 
 const Browser: Component = () => {
-  return (
-    <MetaProvider>
-      <App />
-    </MetaProvider>
-  );
+	return (
+		<MetaProvider>
+			<Router>
+				<App />
+			</Router>
+		</MetaProvider>
+	);
 };
 
 export default Browser;

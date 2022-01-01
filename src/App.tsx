@@ -1,23 +1,14 @@
-import { createSignal } from "solid-js";
-import { Title, Link } from "solid-meta";
-import favicon from "../static/favicon.svg?url";
+import { useRoutes } from 'solid-app-router';
+import { Meta } from 'solid-meta';
+import routes from './routes';
+import './styles/global.scss';
 
 export const App = () => {
-	const [count, setCount] = createSignal(0);
-
-	const counts = (Count: () => number): string => {
-		const count = Count();
-		return `${count} time${count === 1 ? "" : "s"}`;
-	};
-
+	const Routes = useRoutes(routes);
 	return (
 		<>
-			<Title>Solid.js & Vite - SSR</Title>
-			<Link rel="shortcut icon" type="image/svg+xml" href={favicon} />
-			<div>
-				<button onClick={() => setCount(count() + 1)}>Click me</button>
-				<p> The Button Has been clicked {counts(count)}</p>
-			</div>
+			<Meta name='viewport' content='width=device-width, initial-scale=1' />
+			<Routes />
 		</>
 	);
 };
